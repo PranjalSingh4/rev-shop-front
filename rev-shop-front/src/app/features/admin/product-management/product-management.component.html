@@ -58,6 +58,21 @@
             <span *ngIf="productForm.get('price')?.errors?.['min']">Price must be greater than 0</span>
           </div>
         </div>
+        <div class="form-group">
+          <label for="stock">Stock</label>
+          <input
+            id="stock"
+            type="number"
+            formControlName="stock"
+            placeholder="Enter stock quantity"
+            class="form-control"
+            [class.is-invalid]="productForm.get('stock')?.invalid && productForm.get('stock')?.touched"
+          />
+          <div class="error-message" *ngIf="productForm.get('stock')?.invalid && productForm.get('stock')?.touched">
+            <span *ngIf="productForm.get('stock')?.errors?.['required']">Stock is required</span>
+            <span *ngIf="productForm.get('stock')?.errors?.['min']">Stock cannot be negative</span>
+          </div>
+        </div>
 
         <!-- <div class="form-group">
           <label for="photo">Product Photo</label>
@@ -111,6 +126,10 @@
         </div>
         <p class="product-description">{{ product.description }}</p>
         <p class="product-price">Rs.{{ product.price.toFixed(2) }}</p>
+        <p class="product-stock" [ngClass]="{'out-of-stock': product.stock <= 0}">
+          <span *ngIf="product.stock > 0">Stock: {{ product.stock }}</span>
+          <span *ngIf="product.stock <= 0">Out of Stock</span>
+        </p>
         <div class="product-actions">
           <button (click)="editProduct(product)" class="btn-edit">Edit</button>
           <button 

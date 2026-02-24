@@ -45,15 +45,6 @@
 
         <div class="button-section">
           <button (click)="addToCart(product)" class="btn-add-to-cart">Add to Cart</button>
-          <button 
-            class="btn-favorite" 
-            [ngClass]="{ 'favorite-active': isFavorite(product.id || 0) }"
-            [disabled]="!userId"
-            (click)="toggleFavorite(product)"
-            title="Add to Favorites"
-          >
-            {{ isFavorite(product.id || 0) ? '♥ Favorited' : '♡ Add to Favorites' }}
-          </button>
         </div>
       </div>
     </div>

@@ -174,7 +174,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   loadProducts(): void {
-    this.productService.getAllProducts().subscribe(
+    const adminId = this.authService.getUserId();
+    this.productService.getAllProductsBySeller(adminId).subscribe(
       (products) => {
         this.products = products || [];
         this.totalProducts = this.products.length;

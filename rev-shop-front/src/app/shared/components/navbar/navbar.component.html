@@ -33,11 +33,6 @@
             🛒 Cart ({{ cartItemCount }})
           </a>
         </li>
-        <li *ngIf="isBuyer()" class="favorites-item">
-          <a routerLink="/customer/shop" (click)="showFavorites()" title="View Favorites">
-            ♥ Favorites
-          </a>
-        </li>
 
         <!-- Search Box for Buyers -->
         <li *ngIf="isBuyer()" class="search-item">
@@ -49,8 +44,6 @@
             placeholder="🔍 Search..."
             class="navbar-search"
           />
-          <button class="btn-search" (click)="onSearch()" title="Search">🔎</button>
-          <button class="btn-show-fav" (click)="showFavorites()" title="Show Favorites">♥</button>
         </li>
       </ul>
     </div>

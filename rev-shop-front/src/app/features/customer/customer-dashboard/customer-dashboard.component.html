@@ -61,33 +61,6 @@
   <div class="loading" *ngIf="isLoading">
     <p>Loading your orders...</p>
   </div>
-
-  <div class="favorites-section" *ngIf="!isLoading">
-    <h2>❤️ My Favorites</h2>
-    <div class="favorites-container">
-      <div class="favorite-card" *ngFor="let favorite of favorites">
-        <div class="favorite-header">
-          <h3>{{ favorite.product?.name }}</h3>
-          <div class="favorite-actions">
-            <button (click)="moveFavoriteToCart(favorite)" class="btn-move-to-cart" title="Move to Cart">🛒 Move to Cart</button>
-            <button (click)="removeFavorite(favorite)" class="btn-remove" title="Remove from favorites">✕</button>
-          </div>
-        </div>
-
-        <p class="favorite-description">{{ favorite.product?.description }}</p>
-
-        <div class="favorite-info">
-          <span class="price">Rs{{ (favorite.product?.price || 0).toFixed(2) }}</span>
-          <a routerLink="/customer/shop" class="btn-view-shop">View in Shop</a>
-        </div>
-      </div>
-
-      <div class="no-favorites" *ngIf="favorites.length === 0">
-        <p>You haven't added any favorites yet. ❤️</p>
-        <a routerLink="/customer/shop" class="btn-start-shopping">Browse Products</a>
-      </div>
-    </div>
-  </div>
 </div>
 
 <app-footer></app-footer>

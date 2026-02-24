@@ -1,3 +1,4 @@
+ 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -12,19 +13,26 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  addProduct(product: Product): Observable<any> {
-    return this.http.post(`${this.apiUrl}/add`, product).pipe(timeout(10000));
+  addProduct(product: Product, sellerId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/add/${sellerId}`, product).pipe(timeout(10000));
   }
 
+
+ // For customers: fetch all products
   getAllProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(`${this.apiUrl}/all`).pipe(timeout(10000));
+  }
+
+  // Use this method to fetch all products for a seller (admin)
+  getAllProductsBySeller(sellerId: number | null): Observable<Product[]> {
+    return this.http.get<Product[]>(`${this.apiUrl}/admin/${sellerId}`).pipe(timeout(10000));
   }
 
   getProductById(id: number): Observable<Product> {
     return this.http.get<Product>(`${this.apiUrl}/${id}`).pipe(timeout(10000));
   }
 
-  getProductsByAdmin(adminId: number): Observable<Product[]> {
+  getProductsByAdmin(adminId: number | null): Observable<Product[]> {
     return this.http.get<Product[]>(`${this.apiUrl}/admin/${adminId}`).pipe(timeout(10000));
   }
 

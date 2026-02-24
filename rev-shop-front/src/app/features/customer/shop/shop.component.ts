@@ -7,7 +7,6 @@ import { AuthService } from '../../../core/services/auth.service';
 import { SearchService } from '../../../core/services/search.service';
 import { Product } from '../../../core/models';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
-import { FavoriteService } from '../../../core/services/favorite.service';
 
 @Component({
   selector: 'app-shop',
@@ -24,14 +23,12 @@ export class ShopComponent implements OnInit {
   selectedProductQuantities: { [key: number]: number } = {};
   cartMessage = '';
   searchTerm: string = '';
-  showFavoritesOnly = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private cartService: CartService,
     private authService: AuthService,
     private searchService: SearchService,
-    private favoriteService: FavoriteService
   ) {}
 
   ngOnInit(): void {
@@ -39,11 +36,6 @@ export class ShopComponent implements OnInit {
     const id = this.authService.getUserId();
     if (id) {
       this.userId = id;
-      // Preload favorites so heart states are accurate
-      this.favoriteService.getFavorites(id).subscribe({
-        next: () => {},
-        error: (err) => console.error('Error loading favorites in shop:', err)
-      });
     }
 
     // Get resolved data from route
@@ -60,16 +52,6 @@ export class ShopComponent implements OnInit {
       this.filterProducts();
     });
 
-    // Subscribe to "show favorites" toggle from navbar
-    this.searchService.showFavorites$.subscribe((flag) => {
-      this.showFavoritesOnly = flag;
-      this.filterProducts();
-    });
-
-    // Re-filter whenever favorites list changes (so removing a favorite updates the view)
-    this.favoriteService.favorites$.subscribe(() => {
-      this.filterProducts();
-    });
   }
 
   initializeQuantities(): void {
@@ -126,12 +108,6 @@ export class ShopComponent implements OnInit {
     // Base list
     let base = this.products;
 
-    // If showing favorites, reduce the set to favorites only
-    if (this.showFavoritesOnly) {
-      const favs = this.favoriteService.getCurrentFavorites();
-      const favIds = new Set(favs.map(f => f.productId));
-      base = base.filter(p => favIds.has(p.id || -1));
-    }
 
     if (!searchLower) {
       this.filteredProducts = base;
@@ -144,42 +120,4 @@ export class ShopComponent implements OnInit {
     }
   }
 
-  isFavorite(productId: number): boolean {
-    return this.favoriteService.isFavorite(productId);
-  }
-
-  toggleFavorite(product: Product): void {
-    const id = this.authService.getUserId();
-    if (!id) {
-      this.cartMessage = 'Please login first';
-      setTimeout(() => (this.cartMessage = ''), 3000);
-      return;
-    }
-
-    if (this.isFavorite(product.id || 0)) {
-      this.favoriteService.removeFavorite(id, product.id || 0).subscribe({
-        next: () => {
-          this.cartMessage = `Removed from favorites: ${product.name}`;
-          setTimeout(() => (this.cartMessage = ''), 2000);
-        },
-        error: (error) => {
-          console.error('Error removing favorite:', error);
-          this.cartMessage = 'Failed to remove from favorites';
-          setTimeout(() => (this.cartMessage = ''), 3000);
-        }
-      });
-    } else {
-      this.favoriteService.addFavorite(id, product.id || 0).subscribe({
-        next: () => {
-          this.cartMessage = `♥ Added to favorites: ${product.name}`;
-          setTimeout(() => (this.cartMessage = ''), 2000);
-        },
-        error: (error) => {
-          console.error('Error adding favorite:', error);
-          this.cartMessage = 'Failed to add to favorites';
-          setTimeout(() => (this.cartMessage = ''), 3000);
-        }
-      });
-    }
-  }
 }

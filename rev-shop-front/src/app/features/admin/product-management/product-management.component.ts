@@ -30,7 +30,7 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
   searchTerm: string = '';
   successMessage = '';
   errorMessage = '';
-  adminId: number | null = null;
+  sellerId: number | null = null;
   private searchSubscription: Subscription | null = null;
 
   constructor(
@@ -44,17 +44,18 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
     this.productForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      price: ['', [Validators.required, Validators.min(0.01)]]
-    //   photo: ['']
+      price: ['', [Validators.required, Validators.min(0.01)]],
+      stock: ['', [Validators.required, Validators.min(0)]]
+      // photo: ['']
     });
   }
 
   ngOnInit(): void {
-    // Get current admin ID
-    const adminId = this.authService.getUserId();
-    if (adminId) {
-      this.adminId = adminId;
-      console.log('Admin ID:', this.adminId);
+    // Get current seller ID
+    const sellerId = this.authService.getUserId();
+    if (sellerId) {
+      this.sellerId = sellerId;
+      console.log('Seller ID:', this.sellerId);
     }
     
     // Get resolved data from route
@@ -81,13 +82,9 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
   }
 
   loadProducts(): void {
+    const sellerId = this.authService.getUserId();
     this.isLoading = true;
-    
-    const loadCall = this.adminId 
-      ? this.productService.getProductsByAdmin(this.adminId)
-      : this.productService.getAllProducts();
-    
-    loadCall.subscribe({
+    this.productService.getAllProductsBySeller(sellerId).subscribe({
       next: (data) => {
         console.log('Products loaded:', data);
         this.products = data;
@@ -95,22 +92,10 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading admin products, trying getAllProducts:', error);
-        // Fallback to getAllProducts if admin-specific endpoint fails
-        this.productService.getAllProducts().subscribe({
-          next: (data) => {
-            console.log('Products loaded via fallback:', data);
-            this.products = data;
-            this.filteredProducts = data;
-            this.isLoading = false;
-          },
-          error: (fallbackError) => {
-            console.error('Error loading products:', fallbackError);
-            this.errorMessage = 'Failed to load products: ' + (fallbackError.error?.message || fallbackError.message || 'Unknown error');
-            this.isLoading = false;
-            setTimeout(() => this.errorMessage = '', 5000);
-          }
-        });
+        console.error('Error loading seller products:', error);
+        this.errorMessage = 'Failed to load products: ' + (error.error?.message || error.message || 'Unknown error');
+        this.isLoading = false;
+        setTimeout(() => this.errorMessage = '', 5000);
       }
     });
   }
@@ -130,26 +115,25 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
 //   }
 
   addProduct(): void {
-    if (this.productForm.invalid) {
+    if (this.productForm.invalid || !this.sellerId) {
       return;
     }
 
     const product: Product = {
-      ...this.productForm.value
+      ...this.productForm.value,
+      sellerId: this.sellerId
     };
 
-    this.productService.addProduct(product).subscribe(
+    this.productService.addProduct(product, this.sellerId).subscribe(
       () => {
         this.successMessage = 'Product added successfully!';
         this.resetForm();
         this.loadProducts();
-        
         // Hide form and scroll to products section
         this.isFormVisible = false;
         setTimeout(() => {
           this.scrollToProducts();
         }, 500);
-        
         // Clear success message after 3 seconds
         setTimeout(() => this.successMessage = '', 3000);
       },
@@ -165,18 +149,20 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const product: Product = this.productForm.value;
+    const formValue = this.productForm.value;
+    const product: Product = {
+      ...formValue,
+      stock: formValue.stock
+    };
     this.productService.updateProduct(this.editingProductId, product).subscribe(
       () => {
         this.successMessage = 'Product updated successfully!';
         this.resetForm();
         this.loadProducts();
         this.isFormVisible = false;
-        
         setTimeout(() => {
           this.scrollToProducts();
         }, 500);
-        
         setTimeout(() => this.successMessage = '', 3000);
       },
       (error) => {

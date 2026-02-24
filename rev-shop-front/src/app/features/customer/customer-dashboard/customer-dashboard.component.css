@@ -356,18 +356,149 @@
   margin-bottom: 20px;
 }
 
-@media (max-width: 768px) {
-  .order-header {
-    flex-direction: column;
-    gap: 10px;
-  }
 
+@media (max-width: 1024px) {
+  .customer-dashboard {
+    padding: 16px 4vw 40px 4vw;
+  }
+  .orders-section, .summary-card, .favorites-section {
+    padding: 18px;
+  }
+  .dashboard-header h1 {
+    font-size: 26px;
+  }
+  .orders-section h2, .favorites-section h2 {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .customer-dashboard {
+    padding: 8px 2vw 24px 2vw;
+  }
+  .dashboard-header h1 {
+    font-size: 20px;
+  }
+  .dashboard-header p {
+    font-size: 13px;
+  }
   .summary-card {
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
+    padding: 12px;
   }
-
+  .summary-item .value {
+    font-size: 22px;
+  }
+  .orders-section {
+    padding: 12px;
+  }
+  .orders-section h2 {
+    font-size: 16px;
+  }
+  .orders-container {
+    gap: 10px;
+  }
+  .order-card {
+    padding: 10px;
+    font-size: 13px;
+  }
+  .order-header {
+    flex-direction: column;
+    gap: 6px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+  .order-header h3 {
+    font-size: 15px;
+  }
+  .order-date {
+    font-size: 10px;
+  }
+  .status-badge {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+  .order-items h4, .order-address h4 {
+    font-size: 12px;
+  }
+  .order-items li {
+    font-size: 12px;
+    padding: 4px 0;
+  }
+  .order-total {
+    font-size: 13px;
+    padding-top: 8px;
+  }
+  .order-address {
+    margin: 10px 0;
+    padding: 8px;
+    font-size: 12px;
+  }
+  .favorites-section {
+    padding: 10px;
+  }
+  .favorites-section h2 {
+    font-size: 15px;
+  }
   .favorites-container {
     grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .favorite-card {
+    padding: 10px;
+    gap: 8px;
+  }
+  .favorite-header h3 {
+    font-size: 13px;
+  }
+  .favorite-description {
+    font-size: 11px;
+  }
+  .favorite-info .price {
+    font-size: 13px;
+  }
+  .btn-view-shop, .btn-start-shopping {
+    font-size: 10px;
+    padding: 7px 14px;
+  }
+  .btn-remove {
+    width: 24px;
+    height: 24px;
+    font-size: 13px;
+  }
+  .no-orders, .no-favorites {
+    padding: 30px 5px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .customer-dashboard {
+    padding: 2px 1vw 10px 1vw;
+  }
+  .dashboard-header h1 {
+    font-size: 15px;
+  }
+  .summary-card, .orders-section, .favorites-section {
+    padding: 5px;
+  }
+  .order-header h3, .favorites-section h2 {
+    font-size: 12px;
+  }
+  .order-items h4, .order-address h4 {
+    font-size: 10px;
+  }
+  .order-items li, .order-total, .favorite-description, .favorite-info .price {
+    font-size: 10px;
+  }
+  .btn-view-shop, .btn-start-shopping {
+    font-size: 8px;
+    padding: 5px 8px;
+  }
+  .btn-remove {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
   }
 }

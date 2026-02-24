@@ -19,17 +19,15 @@ export class ProductResolver implements Resolve<Product[]> {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<Product[]> {
-    // Get the current admin's ID
-    const adminId = this.authService.getUserId();
-    
-    console.log('ProductResolver - Current admin ID:', adminId);
-    
-    // If admin is logged in, fetch only their products
-    if (adminId) {
-      return this.productService.getProductsByAdmin(adminId).pipe(
+    // Get the current user role
+    const role = this.authService.getRole();
+    const userId = this.authService.getUserId();
+
+    // If admin, fetch only their products
+    if (role === 'ADMIN' && userId) {
+      return this.productService.getProductsByAdmin(userId).pipe(
         catchError((error) => {
           console.log('Admin products endpoint failed, trying all products:', error);
-          // Fallback to all products if admin-specific endpoint fails
           return this.productService.getAllProducts().pipe(
             catchError((fallbackError) => {
               console.error('Both product endpoints failed:', fallbackError);
@@ -39,8 +37,8 @@ export class ProductResolver implements Resolve<Product[]> {
         })
       );
     }
-    
-    // Fallback: get all products
+
+    // Fallback: get all products (for customers)
     return this.productService.getAllProducts().pipe(
       catchError((error) => {
         console.error('Error loading products:', error);
