@@ -1,0 +1,138 @@
+<div class="product-management">
+  <div class="header">
+    <h1>Product Management</h1>
+    <button (click)="toggleForm()" class="btn-add-product">
+      {{ isFormVisible ? 'Cancel' : '+ Add New Product' }}
+    </button>
+  </div>
+
+  <div class="form-section" *ngIf="isFormVisible">
+    <h2>{{ editingProductId ? 'Edit Product' : 'Add New Product' }}</h2>
+    <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
+      <div class="form-group">
+        <label for="name">Product Name</label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          placeholder="Enter product name"
+          class="form-control"
+          [class.is-invalid]="productForm.get('name')?.invalid && productForm.get('name')?.touched"
+        />
+        <div class="error-message" *ngIf="productForm.get('name')?.invalid && productForm.get('name')?.touched">
+          <span *ngIf="productForm.get('name')?.errors?.['required']">Product name is required</span>
+          <span *ngIf="productForm.get('name')?.errors?.['minlength']">Minimum 3 characters required</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          placeholder="Enter product description"
+          class="form-control"
+          rows="4"
+          [class.is-invalid]="productForm.get('description')?.invalid && productForm.get('description')?.touched"
+        ></textarea>
+        <div class="error-message" *ngIf="productForm.get('description')?.invalid && productForm.get('description')?.touched">
+          <span *ngIf="productForm.get('description')?.errors?.['required']">Description is required</span>
+          <span *ngIf="productForm.get('description')?.errors?.['minlength']">Minimum 10 characters required</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="price">Rs.</label>
+          <input
+            id="price"
+            type="number"
+            formControlName="price"
+            placeholder="Enter price"
+            step="0.01"
+            class="form-control"
+            [class.is-invalid]="productForm.get('price')?.invalid && productForm.get('price')?.touched"
+          />
+          <div class="error-message" *ngIf="productForm.get('price')?.invalid && productForm.get('price')?.touched">
+            <span *ngIf="productForm.get('price')?.errors?.['required']">Price is required</span>
+            <span *ngIf="productForm.get('price')?.errors?.['min']">Price must be greater than 0</span>
+          </div>
+        </div>
+
+        <!-- <div class="form-group">
+          <label for="photo">Product Photo</label>
+          <input
+            id="photo"
+            type="file"
+            (change)="onFileSelected($event)"
+            accept="image/*"
+            class="form-control"
+          />
+        </div> -->
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-save" [disabled]="productForm.invalid">
+          {{ editingProductId ? 'Update Product' : 'Add Product' }}
+        </button>
+        <button type="button" (click)="resetForm()" class="btn-cancel">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="message-section">
+    <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
+    <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+  </div>
+
+  <div class="products-section" #productsSection>
+    <h2>All Products</h2>
+    
+    <!-- Search Box -->
+    <div class="search-section">
+      <div class="search-box">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+          placeholder="🔍 Search products by name or description..."
+          class="search-input"
+        />
+        <span class="search-count" *ngIf="searchTerm">{{ filteredProducts.length }} result(s)</span>
+      </div>
+    </div>
+
+    <div class="loading" *ngIf="isLoading">Loading products...</div>
+    
+    <div class="products-grid" *ngIf="!isLoading">
+      <div class="product-card" *ngFor="let product of filteredProducts">
+        <div class="product-header">
+          <h3>{{ product.name }}</h3>
+        </div>
+        <p class="product-description">{{ product.description }}</p>
+        <p class="product-price">Rs.{{ product.price.toFixed(2) }}</p>
+        <div class="product-actions">
+          <button (click)="editProduct(product)" class="btn-edit">Edit</button>
+          <button 
+            (click)="deleteProduct(product.id || 0)" 
+            class="btn-delete"
+            [disabled]="deletingProductId === product.id"
+          >
+            {{ deletingProductId === product.id ? 'Deleting...' : 'Delete' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="no-products" *ngIf="!isLoading && filteredProducts.length === 0 && searchTerm">
+        <p>No products found matching "{{ searchTerm }}"</p>
+        <button (click)="searchTerm = ''; onSearchChange()" class="btn-clear-search">Clear Search</button>
+      </div>
+
+      <div class="no-products" *ngIf="!isLoading && products.length === 0 && !searchTerm">
+        <p>No products added yet.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

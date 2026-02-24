@@ -1,0 +1,168 @@
+<div class="address-form-container">
+  <form [formGroup]="addressForm" (ngSubmit)="onSubmit()" class="address-form" novalidate>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="fullName">Full Name *</label>
+        <input
+          id="fullName"
+          type="text"
+          formControlName="fullName"
+          placeholder="John Doe"
+          class="form-control"
+          [class.error]="addressForm.get('fullName')?.invalid && addressForm.get('fullName')?.touched"
+          aria-describedby="fullName-error"
+        />
+        <span 
+          id="fullName-error"
+          class="error-message" 
+          *ngIf="addressForm.get('fullName')?.invalid && addressForm.get('fullName')?.touched"
+        >
+          {{ getErrorMessage('fullName') }}
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="phoneNumber">Phone Number *</label>
+        <input
+          id="phoneNumber"
+          type="tel"
+          formControlName="phoneNumber"
+          placeholder="1234567890"
+          class="form-control"
+          [class.error]="addressForm.get('phoneNumber')?.invalid && addressForm.get('phoneNumber')?.touched"
+          aria-describedby="phoneNumber-error"
+        />
+        <span 
+          id="phoneNumber-error"
+          class="error-message" 
+          *ngIf="addressForm.get('phoneNumber')?.invalid && addressForm.get('phoneNumber')?.touched"
+        >
+          {{ getErrorMessage('phoneNumber') }}
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group full-width">
+      <label for="streetAddress">Street Address *</label>
+      <input
+        id="streetAddress"
+        type="text"
+        formControlName="streetAddress"
+        placeholder="123 Main Street"
+        class="form-control"
+        [class.error]="addressForm.get('streetAddress')?.invalid && addressForm.get('streetAddress')?.touched"
+        aria-describedby="streetAddress-error"
+      />
+      <span 
+        id="streetAddress-error"
+        class="error-message" 
+        *ngIf="addressForm.get('streetAddress')?.invalid && addressForm.get('streetAddress')?.touched"
+      >
+        {{ getErrorMessage('streetAddress') }}
+      </span>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="city">City *</label>
+        <input
+          id="city"
+          type="text"
+          formControlName="city"
+          placeholder="New York"
+          class="form-control"
+          [class.error]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched"
+          aria-describedby="city-error"
+        />
+        <span 
+          id="city-error"
+          class="error-message" 
+          *ngIf="addressForm.get('city')?.invalid && addressForm.get('city')?.touched"
+        >
+          {{ getErrorMessage('city') }}
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="state">State/Province *</label>
+        <input
+          id="state"
+          type="text"
+          formControlName="state"
+          placeholder="NY"
+          class="form-control"
+          [class.error]="addressForm.get('state')?.invalid && addressForm.get('state')?.touched"
+          aria-describedby="state-error"
+        />
+        <span 
+          id="state-error"
+          class="error-message" 
+          *ngIf="addressForm.get('state')?.invalid && addressForm.get('state')?.touched"
+        >
+          {{ getErrorMessage('state') }}
+        </span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="postalCode">Postal Code *</label>
+        <input
+          id="postalCode"
+          type="text"
+          formControlName="postalCode"
+          placeholder="10001"
+          class="form-control"
+          [class.error]="addressForm.get('postalCode')?.invalid && addressForm.get('postalCode')?.touched"
+          aria-describedby="postalCode-error"
+        />
+        <span 
+          id="postalCode-error"
+          class="error-message" 
+          *ngIf="addressForm.get('postalCode')?.invalid && addressForm.get('postalCode')?.touched"
+        >
+          {{ getErrorMessage('postalCode') }}
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="country">Country *</label>
+        <input
+          id="country"
+          type="text"
+          formControlName="country"
+          placeholder="United States"
+          class="form-control"
+          [class.error]="addressForm.get('country')?.invalid && addressForm.get('country')?.touched"
+          aria-describedby="country-error"
+        />
+        <span 
+          id="country-error"
+          class="error-message" 
+          *ngIf="addressForm.get('country')?.invalid && addressForm.get('country')?.touched"
+        >
+          {{ getErrorMessage('country') }}
+        </span>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="addressForm.invalid || isLoading"
+        [attr.aria-busy]="isLoading"
+      >
+        {{ isLoading ? 'Saving...' : (address ? 'Update Address' : 'Add Address') }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onCancel()"
+        [disabled]="isLoading"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

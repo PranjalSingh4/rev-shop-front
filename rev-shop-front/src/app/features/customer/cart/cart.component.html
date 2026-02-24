@@ -1,0 +1,163 @@
+<div class="cart">
+  <div class="header">
+    <h1>Shopping Cart</h1>
+    <a routerLink="/customer/shop" class="btn-continue-shopping">Continue Shopping</a>
+  </div>
+
+  <!-- Message Display -->
+  <div class="message-section" *ngIf="message">
+    <div [ngClass]="message.includes('✓') ? 'success-message' : 'error-message'">
+      {{ message }}
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading" *ngIf="isLoading">
+    <p>Loading your cart...</p>
+  </div>
+
+  <!-- Cart Content -->
+  <div class="main-content" *ngIf="!isLoading">
+    <!-- Cart Items Section -->
+    <div class="cart-items-section">
+      <h2>Cart Items ({{ cartItems.length }})</h2>
+      
+      <!-- Items List -->
+      <div class="cart-items" *ngIf="cartItems.length > 0">
+        <div class="cart-item" *ngFor="let item of cartItems; let i = index">
+          <div class="item-details">
+            <h3>{{ item?.product?.name || 'Unknown Product' }}</h3>
+            <p class="description">{{ item?.product?.description || 'No description' }}</p>
+            <div class="item-meta">
+              <span class="price">Rs{{ (item?.product?.price || 0) | number:'1.2-2' }} each</span>
+              <span class="quantity">Qty: {{ item?.quantity || 1 }}</span>
+            </div>
+          </div>
+          <div class="item-actions">
+            <div class="item-total">
+              Rs{{ ((item?.product?.price || 0) * (item?.quantity || 1)) | number:'1.2-2' }}
+            </div>
+            <button 
+              (click)="removeItem(item?.product?.id || 0)"
+              class="btn-remove"
+              [disabled]="loadingProductId === item?.product?.id"
+            >
+              {{ loadingProductId === item?.product?.id ? 'Removing...' : 'Remove' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty Cart Message -->
+      <div class="empty-cart" *ngIf="cartItems.length === 0">
+        <p>Your cart is empty</p>
+        <a routerLink="/customer/shop" class="btn-start-shopping">Start Shopping</a>
+      </div>
+    </div>
+
+    <!-- Address & Checkout Section (only show if cart has items) -->
+    <div class="checkout-section" *ngIf="cartItems.length > 0">
+      <!-- Address Selection Section -->
+      <div class="address-section">
+        <h2>Delivery Address</h2>
+        
+        <div class="address-loading" *ngIf="isLoadingAddresses">
+          <p>Loading addresses...</p>
+        </div>
+
+        <!-- Existing Addresses -->
+        <div class="addresses-list" *ngIf="!isLoadingAddresses && addresses.length > 0">
+          <h3>Your Addresses</h3>
+          <div class="address-item" *ngFor="let address of addresses">
+            <div class="address-radio">
+              <input 
+                type="radio" 
+                [id]="'address-' + address.id" 
+                [value]="address.id" 
+                [(ngModel)]="selectedAddressId"
+                (change)="selectAddress(address.id || 0)"
+                title="Select this address"
+                aria-label="Select address for {{address.fullName}}"
+              />
+              <label [for]="'address-' + address.id" class="address-label">
+                <div class="address-content">
+                  <p class="address-name"><strong>{{ address.fullName }}</strong></p>
+                  <p class="address-street">{{ address.streetAddress }}</p>
+                  <p class="address-city-state">{{ address.city }}, {{ address.state }} {{ address.postalCode }}</p>
+                  <p class="address-country">{{ address.country }}</p>
+                  <p class="address-phone">📞 {{ address.phoneNumber }}</p>
+                  <span *ngIf="address.isDefault" class="default-badge">Default</span>
+                </div>
+              </label>
+            </div>
+            <button 
+              *ngIf="addresses.length > 1"
+              (click)="deleteAddress(address.id || 0)"
+              class="btn-delete-address"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <!-- Add New Address Option -->
+        <div class="add-address-section">
+          <button 
+            *ngIf="!showAddressForm"
+            (click)="showAddressForm = true" 
+            class="btn-add-address"
+          >
+            + Add New Address
+          </button>
+
+          <!-- Address Form -->
+          <app-address-form 
+            *ngIf="showAddressForm"
+            [isLoading]="isCreatingAddress"
+            (submit)="onAddressSubmit($event)"
+            (cancel)="onAddressCancel()"
+          ></app-address-form>
+        </div>
+
+        <div class="no-addresses" *ngIf="!isLoadingAddresses && addresses.length === 0 && !showAddressForm">
+          <p>No addresses found. Please add a delivery address to continue.</p>
+        </div>
+      </div>
+
+      <!-- Cart Summary Section -->
+      <div class="cart-summary">
+        <h2>Order Summary</h2>
+        <div class="summary-row">
+          <span>Subtotal ({{ cartItems.length }} items)</span>
+          <span>Rs{{ getCartTotal().toFixed(2) }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span>FREE</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span>Rs{{ getCartTotal().toFixed(2) }}</span>
+        </div>
+        
+        <!-- Address Selection Status -->
+        <div class="address-status" *ngIf="!selectedAddressId" [ngClass]="'warning'">
+          <p>⚠️ Please select or create a delivery address</p>
+        </div>
+        <div class="address-status" *ngIf="selectedAddressId" [ngClass]="'success'">
+          <p>✓ Delivery address selected</p>
+        </div>
+
+        <button 
+          (click)="placeOrder()"
+          class="btn-place-order"
+          [disabled]="isPlacingOrder || !selectedAddressId"
+        >
+          {{ isPlacingOrder ? 'Placing Order...' : 'Place Order' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

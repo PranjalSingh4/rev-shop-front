@@ -1,0 +1,89 @@
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <div class="header-title">
+      <h1>Seller Dashboard</h1>
+      <p>Manage your products and track orders</p>
+    </div>
+    <div class="header-controls">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search products..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+        title="Search products by name or description"
+      />
+      <button 
+        (click)="refreshOrders()" 
+        class="btn-refresh"
+        [disabled]="isLoading"
+        title="Refresh orders (Auto-refreshes every 5 seconds)"
+      >
+        🔄 Refresh Orders
+      </button>
+    </div>
+  </div>
+
+  <div class="refresh-message" *ngIf="refreshMessage">
+    {{ refreshMessage }}
+  </div>
+
+  <div class="stats-grid" *ngIf="!isLoading">
+    <div class="stat-card">
+      <div class="stat-icon">📦</div>
+      <h3>Total Products</h3>
+      <p class="stat-value">{{ totalProducts }}</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <h3>Total Orders</h3>
+      <p class="stat-value">{{ totalOrders }}</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <h3>Total Revenue</h3>
+      <p class="stat-value">Rs.{{ totalRevenue.toFixed(2) }}</p>
+    </div>
+  </div>
+
+  <div class="orders-section" *ngIf="!isLoading">
+    <h2>Recent Orders</h2>
+    <div class="orders-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Buyer</th>
+            <th>Status</th>
+            <th>Total Items</th>
+            <th>Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orders">
+            <td>#{{ order.id }}</td>
+            <td>{{ order.user?.name || 'Unknown' }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="'status-' + (order.status?.toLowerCase() || '')">
+                {{ order.status }}
+              </span>
+            </td>
+            <td>{{ order.items?.length || 0 }}</td>
+            <td>Rs{{ getOrderTotal(order).toFixed(2) }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="no-orders" *ngIf="orders.length === 0">
+        <p>No orders yet</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="isLoading">
+    <p>Loading dashboard data...</p>
+  </div>
+</div>
+
+<app-footer></app-footer>

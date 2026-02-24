@@ -1,0 +1,93 @@
+<div class="customer-dashboard">
+  <div class="dashboard-header">
+    <h1>My Dashboard</h1>
+    <p>Welcome back! Here's your order history</p>
+  </div>
+
+  <div class="summary-card" *ngIf="!isLoading">
+    <div class="summary-item">
+      <span class="label">Total Orders</span>
+      <span class="value">{{ totalOrders }}</span>
+    </div>
+  </div>
+
+  <div class="orders-section" *ngIf="!isLoading">
+    <h2>Your Orders</h2>
+    <div class="orders-container">
+      <div class="order-card" *ngFor="let order of orders">
+        <div class="order-header">
+          <div>
+            <h3>Order #{{ order.id }}</h3>
+            <p class="order-date">{{ getOrderDate(order) }}</p>
+          </div>
+          <span class="status-badge" [ngClass]="'status-' + (order.status?.toLowerCase() || 'placed')">
+            {{ order.status || 'Placed' }}
+          </span>
+        </div>
+
+        <div class="order-items">
+          <h4>Items in this order:</h4>
+          <ul>
+            <li *ngFor="let item of order.items">
+              {{ item?.product?.name || item?.name }} x{{ item?.quantity }} - Rs{{ ((item?.product?.price || item?.price || 0) * (item?.quantity || 1)).toFixed(2) }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Delivery Address Section -->
+        <div class="order-address" *ngIf="order.address">
+          <h4>Delivery Address:</h4>
+          <div class="address-details">
+            <p><strong>{{ order.address.fullName }}</strong></p>
+            <p>{{ order.address.streetAddress }}</p>
+            <p>{{ order.address.city }}, {{ order.address.state }} {{ order.address.postalCode }}</p>
+            <p>{{ order.address.country }}</p>
+            <p>📱 {{ order.address.phoneNumber }}</p>
+          </div>
+        </div>
+
+        <div class="order-total">
+          <strong>Total:</strong> Rs{{ getOrderTotal(order).toFixed(2) }}
+        </div>
+      </div>
+
+      <div class="no-orders" *ngIf="orders.length === 0">
+        <p>You haven't placed any orders yet.</p>
+        <a routerLink="/customer/shop" class="btn-start-shopping">Start Buying</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="isLoading">
+    <p>Loading your orders...</p>
+  </div>
+
+  <div class="favorites-section" *ngIf="!isLoading">
+    <h2>❤️ My Favorites</h2>
+    <div class="favorites-container">
+      <div class="favorite-card" *ngFor="let favorite of favorites">
+        <div class="favorite-header">
+          <h3>{{ favorite.product?.name }}</h3>
+          <div class="favorite-actions">
+            <button (click)="moveFavoriteToCart(favorite)" class="btn-move-to-cart" title="Move to Cart">🛒 Move to Cart</button>
+            <button (click)="removeFavorite(favorite)" class="btn-remove" title="Remove from favorites">✕</button>
+          </div>
+        </div>
+
+        <p class="favorite-description">{{ favorite.product?.description }}</p>
+
+        <div class="favorite-info">
+          <span class="price">Rs{{ (favorite.product?.price || 0).toFixed(2) }}</span>
+          <a routerLink="/customer/shop" class="btn-view-shop">View in Shop</a>
+        </div>
+      </div>
+
+      <div class="no-favorites" *ngIf="favorites.length === 0">
+        <p>You haven't added any favorites yet. ❤️</p>
+        <a routerLink="/customer/shop" class="btn-start-shopping">Browse Products</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

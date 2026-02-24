@@ -1,0 +1,67 @@
+<div class="shop">
+  <div class="header">
+    <h1>Shop</h1>
+    <p>Browse and add products to your cart</p>
+  </div>
+
+  <div class="message-section">
+    <div class="cart-message" *ngIf="cartMessage">{{ cartMessage }}</div>
+  </div>
+
+  <div class="loading" *ngIf="isLoading">
+    <p>Loading products...</p>
+  </div>
+
+  <div class="products-grid" *ngIf="!isLoading">
+    <div class="product-card" *ngFor="let product of filteredProducts">
+      <div class="product-image">
+        <div class="placeholder">📦</div>
+      </div>
+
+      <div class="product-info">
+        <h3>{{ product.name }}</h3>
+        <p class="description">{{ product.description }}</p>
+
+        <div class="price-section">
+          <span class="price">Rs{{ product.price.toFixed(2) }}</span>
+        </div>
+
+        <div class="quantity-section">
+          <label [for]="'qty-' + product.id">Quantity:</label>
+
+          <select
+            [id]="'qty-' + product.id"
+            [ngModel]="getQuantity(product.id || 0)"
+            (ngModelChange)="setQuantity(product.id || 0, $event)"
+            class="quantity-select"
+            title="Select quantity"
+            aria-label="Select quantity for {{product.name}}"
+          >
+            <option *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]" [ngValue]="i">
+              {{ i }}
+            </option>
+          </select>
+        </div>
+
+        <div class="button-section">
+          <button (click)="addToCart(product)" class="btn-add-to-cart">Add to Cart</button>
+          <button 
+            class="btn-favorite" 
+            [ngClass]="{ 'favorite-active': isFavorite(product.id || 0) }"
+            [disabled]="!userId"
+            (click)="toggleFavorite(product)"
+            title="Add to Favorites"
+          >
+            {{ isFavorite(product.id || 0) ? '♥ Favorited' : '♡ Add to Favorites' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-products" *ngIf="!isLoading && products.length === 0 && !searchTerm">
+      <p>No products available at the moment.</p>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>
